@@ -51,9 +51,6 @@ android {
     }
 }
 
-//Must be after android
-//apply plugin: 'android-unit-test'
-
 dependencies {
 
     debugCompile project(path: ':twittercore', configuration: 'debug')
