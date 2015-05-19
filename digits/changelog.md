@@ -4,22 +4,22 @@
 ## Unreleased
 
 ## v1.4.2
-* (IF) Added normalized phone number from /device/login endpoint
+* (IC) Added normalized phone number from /device/login endpoint
 * (EF) Change xauth_phone_number.json endpoint to sdk/login endpoint
 * (EF) Change over to api.digits.com
 
 ## v1.4.1
-* (IF) Added normalized phone number from /device/register endpoint
-* (IF) Changed host to DigitsApi for ContactsClient
+* (IC) Added normalized phone number from /device/register endpoint
+* (IC) Changed host to DigitsApi for ContactsClient
 
 ## v1.4.0
 * (EF) Set selected country on country list spinner using info from SIM
 * (EF) Removed "Number associated with Twitter" fallback strings.
 
 ## v1.3.0
-* (IF) Fixed UI bug on StateButton
+* (IC) Fixed UI bug on StateButton
 * (EF) Added hasUserGrantedPermission to Contacts API.
-* (IF) Read Phone number from sim device
+* (IC) Read Phone number from sim device
 * (EF) Read SMS code from device if RECEIVE_SMS permission is present.
 
 ## v1.2.0
