@@ -3,7 +3,7 @@ package com.digits.sdk.android;
 import com.twitter.sdk.android.core.TwitterApiErrorConstants;
 
 public class DigitsErrorCodesTests extends DigitsAndroidTestCase {
-    //all the api codes are positive integers
+    //all the API codes are positive integers
     private static final int UNKNOWN_ERROR = -10;
     private DigitsErrorCodes errorCodes;
 
