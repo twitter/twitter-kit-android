@@ -10,7 +10,9 @@ This, and all github.com/twitter projects, are under the [Twitter Open Source Co
 ## Building
 Please use the provided gradle wrapper to build the project
 
-```./gradlew assemble
+```
+./gradlew assemble
+```
 
 ## Contact
 
