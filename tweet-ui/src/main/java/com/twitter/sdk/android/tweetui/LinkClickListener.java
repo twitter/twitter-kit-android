@@ -22,7 +22,7 @@ import com.twitter.sdk.android.core.models.MediaEntity;
 /**
  * Tweet interaction listener
  */
-interface LinkClickListener {
+public interface LinkClickListener {
     /**
      * A URL was clicked
      *

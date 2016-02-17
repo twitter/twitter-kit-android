@@ -858,6 +858,16 @@ public abstract class BaseTweetView extends LinearLayout {
         return linkClickListener;
     }
 
+    /**
+     * Enable or disable Tweet actions
+     * @param listener Set the link click listener actions.
+     *                 If a tweet has links embedded you can listen for
+     *                 the clicks on the link and perform your own action.
+     */
+    public void setLinkClickListener(LinkClickListener listener) {
+        linkClickListener = listener;
+    }
+
     class PermalinkClickListener implements OnClickListener {
         @Override
         public void onClick(View v) {

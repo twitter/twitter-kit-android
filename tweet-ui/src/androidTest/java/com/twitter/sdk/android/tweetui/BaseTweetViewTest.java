@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import io.fabric.sdk.android.Fabric;
@@ -209,6 +210,29 @@ public abstract class BaseTweetViewTest extends TweetUiTestCase {
         assertEquals(TestFixtures.TEST_CONTENT_DESCRIPTION, view.getContentDescription());
 
         TestUtils.setLocale(getContext(), originalLocale);
+    }
+
+    // LinkClickListener click
+    public void testSetTweet_clickListenerUrl() {
+        final BaseTweetView view = createView(context, TestFixtures.TEST_TWEET_LINK);
+        view.setLinkClickListener(new LinkClickListener() {
+            @Override
+            public void onUrlClicked(String url) {
+            }
+
+            @Override
+            public void onPhotoClicked(MediaEntity mediaEntity) {
+            }
+        });
+
+        assertNotNull(view.getLinkClickListener());
+    }
+
+    // If LinkClickListener not specified the getLinkClickListener should be defaulted and not null
+    public void testSetTweet_defaultClickListener() {
+        final BaseTweetView view = createView(context, TestFixtures.TEST_TWEET_LINK);
+        Log.d("TAG", "testSetTweet_defaultClickListener: " + view.getTweet().text);
+        assertNotNull(view.getLinkClickListener());
     }
 
     // Permalink click
