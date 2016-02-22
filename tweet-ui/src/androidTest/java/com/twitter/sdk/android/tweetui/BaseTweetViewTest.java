@@ -30,6 +30,8 @@ import io.fabric.sdk.android.KitStub;
 import io.fabric.sdk.android.Logger;
 
 import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.MediaEntity;
 import com.twitter.sdk.android.core.models.Tweet;
 
@@ -212,16 +214,36 @@ public abstract class BaseTweetViewTest extends TweetUiTestCase {
         TestUtils.setLocale(getContext(), originalLocale);
     }
 
-    // LinkClickListener click
-    public void testSetTweet_clickListenerUrl() {
+    // OnMediaClickListener
+    public void testSetTweet_setOnMediaLinkActionCallback() {
         final BaseTweetView view = createView(context, TestFixtures.TEST_TWEET_LINK);
-        view.setLinkClickListener(new LinkClickListener() {
+        view.setOnMediaLinkActionCallback(new Callback<MediaEntity>() {
             @Override
-            public void onUrlClicked(String url) {
+            public void success(Result<MediaEntity> result) {
+                //Do nothing
             }
 
             @Override
-            public void onPhotoClicked(MediaEntity mediaEntity) {
+            public void failure(TwitterException exception) {
+                //Do nothing
+            }
+        });
+
+        assertNotNull(view.getMediaLinkAction());
+    }
+
+    // OnMediaClickListener
+    public void testSetTweet_setOnLinkActionCallback() {
+        final BaseTweetView view = createView(context, TestFixtures.TEST_TWEET_LINK);
+        view.setOnLinkActionCallback(new Callback<String>() {
+            @Override
+            public void success(Result<String> result) {
+                //Do nothing
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                //Do nothing
             }
         });
 

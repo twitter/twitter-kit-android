@@ -823,6 +823,14 @@ public abstract class BaseTweetView extends LinearLayout {
                 stripPhotoEntity, actionColor);
     }
 
+    public Callback<String> getLinkClickActionCallback() {
+        return linkClickActionCallback;
+    }
+
+    public Callback<MediaEntity> getMediaLinkAction() {
+        return mediaLinkAction;
+    }
+
     void setContentDescription(Tweet displayTweet) {
         if (!TweetUtils.isTweetResolvable(displayTweet)) {
             setContentDescription(getResources().getString(R.string.tw__loading_tweet));
