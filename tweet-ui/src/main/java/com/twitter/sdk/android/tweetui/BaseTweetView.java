@@ -439,12 +439,22 @@ public abstract class BaseTweetView extends LinearLayout {
         tweetActionBarView.setTweet(tweet);
     }
 
+    /**
+     * Enable or disable Tweet actions
+     * @param mediaEntityCallback Set the callback for any clicks made to MediaEntities.
+     *                 If a tweet has photos/images embedded you can add a callback to perform your own action.
+     */
     public void setOnMediaLinkActionCallback(Callback<MediaEntity> mediaEntityCallback) {
         mediaLinkAction = mediaEntityCallback;
     }
 
+    /**
+     * Enable or disable Tweet actions
+     * @param linkClickActionCallback Set the callback for any clicks made to url's.
+     *                 If a tweet has any url's embedded you can add a callback to perform your own action.
+     */
     public void setOnLinkActionCallback(Callback<String> linkClickActionCallback) {
-        linkClickActionCallback = linkClickActionCallback;
+        this.linkClickActionCallback = linkClickActionCallback;
     }
 
     /**
@@ -879,16 +889,6 @@ public abstract class BaseTweetView extends LinearLayout {
             };
         }
         return linkClickListener;
-    }
-
-    /**
-     * Enable or disable Tweet actions
-     * @param listener Set the link click listener actions.
-     *                 If a tweet has links embedded you can listen for
-     *                 the clicks on the link and perform your own action.
-     */
-    public void setLinkClickListener(LinkClickListener listener) {
-        linkClickListener = listener;
     }
 
     class PermalinkClickListener implements OnClickListener {
