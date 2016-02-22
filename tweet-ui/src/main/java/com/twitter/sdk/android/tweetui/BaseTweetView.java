@@ -38,6 +38,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import io.fabric.sdk.android.Fabric;
+import retrofit.client.Response;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.IntentUtils;
@@ -74,6 +75,8 @@ public abstract class BaseTweetView extends LinearLayout {
 
     // attributes
     private LinkClickListener linkClickListener;
+    private Callback<String> linkClickActionCallback;
+    private Callback<MediaEntity> mediaLinkAction;
     private Uri permalinkUri;
     Tweet tweet;
 
@@ -436,6 +439,14 @@ public abstract class BaseTweetView extends LinearLayout {
         tweetActionBarView.setTweet(tweet);
     }
 
+    public void setOnMediaLinkActionCallback(Callback<MediaEntity> mediaEntityCallback) {
+        mediaLinkAction = mediaEntityCallback;
+    }
+
+    public void setOnLinkActionCallback(Callback<String> linkClickActionCallback) {
+        linkClickActionCallback = linkClickActionCallback;
+    }
+
     /**
      * Render the Tweet by updating the subviews. For any data that is missing from the Tweet,
      * invalidate the subview value (e.g. text views set to empty string) for view recycling.
@@ -682,12 +693,16 @@ public abstract class BaseTweetView extends LinearLayout {
         mediaView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final VideoInfo.Variant variant = TweetMediaUtils.getSupportedVariant(entity);
-                if (variant != null) {
-                    final Intent intent = new Intent(getContext(), PlayerActivity.class);
-                    intent.putExtra(PlayerActivity.MEDIA_ENTITY, entity);
-                    intent.putExtra(PlayerActivity.TWEET_ID, displayTweet.id);
-                    IntentUtils.safeStartActivity(getContext(), intent);
+                if (mediaLinkAction != null) {
+                    mediaLinkAction.success(new Result<MediaEntity>(entity, null));
+                } else {
+                    final VideoInfo.Variant variant = TweetMediaUtils.getSupportedVariant(entity);
+                    if (variant != null) {
+                        final Intent intent = new Intent(getContext(), PlayerActivity.class);
+                        intent.putExtra(PlayerActivity.MEDIA_ENTITY, entity);
+                        intent.putExtra(PlayerActivity.TWEET_ID, displayTweet.id);
+                        IntentUtils.safeStartActivity(getContext(), intent);
+                    }
                 }
             }
         });
@@ -697,10 +712,14 @@ public abstract class BaseTweetView extends LinearLayout {
         mediaView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Intent intent = new Intent(getContext(), GalleryActivity.class);
-                intent.putExtra(GalleryActivity.MEDIA_ENTITY, entity);
-                intent.putExtra(GalleryActivity.TWEET_ID, displayTweet.id);
-                IntentUtils.safeStartActivity(getContext(), intent);
+                if (mediaLinkAction != null) {
+                    mediaLinkAction.success(new Result<MediaEntity>(entity, null));
+                } else {
+                    final Intent intent = new Intent(getContext(), GalleryActivity.class);
+                    intent.putExtra(GalleryActivity.MEDIA_ENTITY, entity);
+                    intent.putExtra(GalleryActivity.TWEET_ID, displayTweet.id);
+                    IntentUtils.safeStartActivity(getContext(), intent);
+                }
             }
         });
     }
@@ -842,10 +861,14 @@ public abstract class BaseTweetView extends LinearLayout {
                 public void onUrlClicked(String url) {
                     if (TextUtils.isEmpty(url)) return;
 
-                    final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    if (!IntentUtils.safeStartActivity(getContext(), intent)) {
-                        Fabric.getLogger().e(TweetUi.LOGTAG,
-                                "Activity cannot be found to open URL");
+                    if (linkClickActionCallback != null) {
+                        linkClickActionCallback.success(new Result<String>(url, null));
+                    } else {
+                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        if (!IntentUtils.safeStartActivity(getContext(), intent)) {
+                            Fabric.getLogger().e(TweetUi.LOGTAG,
+                                    "Activity cannot be found to open URL");
+                        }
                     }
                 }
 
