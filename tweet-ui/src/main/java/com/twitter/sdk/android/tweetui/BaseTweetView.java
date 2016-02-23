@@ -74,6 +74,8 @@ public abstract class BaseTweetView extends LinearLayout {
 
     // attributes
     private LinkClickListener linkClickListener;
+    private TweetLinkClickListener tweetLinkClickListener;
+    private TweetMediaClickListener tweetMediaClickListener;
     private Uri permalinkUri;
     Tweet tweet;
 
@@ -437,6 +439,24 @@ public abstract class BaseTweetView extends LinearLayout {
     }
 
     /**
+     * Enable or disable Tweet actions
+     * @param tweetMediaClickListener Set the callback for any clicks made to MediaEntities.
+     *                 If a tweet has photos/images embedded you can add a callback to perform your own action.
+     */
+    public void setOnTweetMediaClickListener(TweetMediaClickListener tweetMediaClickListener) {
+        this.tweetMediaClickListener = tweetMediaClickListener;
+    }
+
+    /**
+     * Enable or disable Tweet actions
+     * @param tweetLinkClickListener Set the callback for any clicks made to url's.
+     *                 If a tweet has any url's embedded you can add a callback to perform your own action.
+     */
+    public void setOnTweetLinkClickListener(TweetLinkClickListener tweetLinkClickListener) {
+        this.tweetLinkClickListener = tweetLinkClickListener;
+    }
+
+    /**
      * Render the Tweet by updating the subviews. For any data that is missing from the Tweet,
      * invalidate the subview value (e.g. text views set to empty string) for view recycling.
      * Do not call with render true until inflation has completed.
@@ -682,12 +702,16 @@ public abstract class BaseTweetView extends LinearLayout {
         mediaView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final VideoInfo.Variant variant = TweetMediaUtils.getSupportedVariant(entity);
-                if (variant != null) {
-                    final Intent intent = new Intent(getContext(), PlayerActivity.class);
-                    intent.putExtra(PlayerActivity.MEDIA_ENTITY, entity);
-                    intent.putExtra(PlayerActivity.TWEET_ID, displayTweet.id);
-                    IntentUtils.safeStartActivity(getContext(), intent);
+                if (tweetMediaClickListener != null) {
+                    tweetMediaClickListener.onTweetMediaEntityClicked(entity);
+                } else {
+                    final VideoInfo.Variant variant = TweetMediaUtils.getSupportedVariant(entity);
+                    if (variant != null) {
+                        final Intent intent = new Intent(getContext(), PlayerActivity.class);
+                        intent.putExtra(PlayerActivity.MEDIA_ENTITY, entity);
+                        intent.putExtra(PlayerActivity.TWEET_ID, displayTweet.id);
+                        IntentUtils.safeStartActivity(getContext(), intent);
+                    }
                 }
             }
         });
@@ -697,10 +721,14 @@ public abstract class BaseTweetView extends LinearLayout {
         mediaView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Intent intent = new Intent(getContext(), GalleryActivity.class);
-                intent.putExtra(GalleryActivity.MEDIA_ENTITY, entity);
-                intent.putExtra(GalleryActivity.TWEET_ID, displayTweet.id);
-                IntentUtils.safeStartActivity(getContext(), intent);
+                if (tweetMediaClickListener != null) {
+                    tweetMediaClickListener.onTweetMediaEntityClicked(entity);
+                } else {
+                    final Intent intent = new Intent(getContext(), GalleryActivity.class);
+                    intent.putExtra(GalleryActivity.MEDIA_ENTITY, entity);
+                    intent.putExtra(GalleryActivity.TWEET_ID, displayTweet.id);
+                    IntentUtils.safeStartActivity(getContext(), intent);
+                }
             }
         });
     }
@@ -794,6 +822,14 @@ public abstract class BaseTweetView extends LinearLayout {
                 stripPhotoEntity, actionColor);
     }
 
+    public TweetLinkClickListener getTweetLinkClickListener() {
+        return tweetLinkClickListener;
+    }
+
+    public TweetMediaClickListener getTweetMediaClickListener() {
+        return tweetMediaClickListener;
+    }
+
     void setContentDescription(Tweet displayTweet) {
         if (!TweetUtils.isTweetResolvable(displayTweet)) {
             setContentDescription(getResources().getString(R.string.tw__loading_tweet));
@@ -842,10 +878,14 @@ public abstract class BaseTweetView extends LinearLayout {
                 public void onUrlClicked(String url) {
                     if (TextUtils.isEmpty(url)) return;
 
-                    final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    if (!IntentUtils.safeStartActivity(getContext(), intent)) {
-                        Fabric.getLogger().e(TweetUi.LOGTAG,
-                                "Activity cannot be found to open URL");
+                    if (tweetLinkClickListener != null) {
+                        tweetLinkClickListener.onTweetLinkClickListener(url);
+                    } else {
+                        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        if (!IntentUtils.safeStartActivity(getContext(), intent)) {
+                            Fabric.getLogger().e(TweetUi.LOGTAG,
+                                    "Activity cannot be found to open URL");
+                        }
                     }
                 }
 
