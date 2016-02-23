@@ -30,8 +30,6 @@ import io.fabric.sdk.android.KitStub;
 import io.fabric.sdk.android.Logger;
 
 import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.MediaEntity;
 import com.twitter.sdk.android.core.models.Tweet;
 
@@ -217,37 +215,27 @@ public abstract class BaseTweetViewTest extends TweetUiTestCase {
     // OnMediaClickListener
     public void testSetTweet_setOnMediaLinkActionCallback() {
         final BaseTweetView view = createView(context, TestFixtures.TEST_TWEET_LINK);
-        view.setOnMediaLinkActionCallback(new Callback<MediaEntity>() {
+        view.setOnTweetMediaClickListener(new TweetMediaClickListener() {
             @Override
-            public void success(Result<MediaEntity> result) {
-                //Do nothing
-            }
+            public void onTweetMediaEntityClicked(MediaEntity entity) {
 
-            @Override
-            public void failure(TwitterException exception) {
-                //Do nothing
             }
         });
 
-        assertNotNull(view.getMediaLinkAction());
+        assertNotNull(view.getTweetMediaClickListener());
     }
 
     // OnMediaClickListener
     public void testSetTweet_setOnLinkActionCallback() {
         final BaseTweetView view = createView(context, TestFixtures.TEST_TWEET_LINK);
-        view.setOnLinkActionCallback(new Callback<String>() {
+        view.setOnTweetLinkClickListener(new TweetLinkClickListener() {
             @Override
-            public void success(Result<String> result) {
-                //Do nothing
-            }
+            public void onTweetLinkClickListener(String url) {
 
-            @Override
-            public void failure(TwitterException exception) {
-                //Do nothing
             }
         });
 
-        assertNotNull(view.getLinkClickListener());
+        assertNotNull(view.getTweetLinkClickListener());
     }
 
     // If LinkClickListener not specified the getLinkClickListener should be defaulted and not null

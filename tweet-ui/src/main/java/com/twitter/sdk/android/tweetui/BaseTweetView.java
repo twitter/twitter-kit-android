@@ -38,7 +38,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import io.fabric.sdk.android.Fabric;
-import retrofit.client.Response;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.IntentUtils;
@@ -75,8 +74,8 @@ public abstract class BaseTweetView extends LinearLayout {
 
     // attributes
     private LinkClickListener linkClickListener;
-    private Callback<String> linkClickActionCallback;
-    private Callback<MediaEntity> mediaLinkAction;
+    private TweetLinkClickListener tweetLinkClickListener;
+    private TweetMediaClickListener tweetMediaClickListener;
     private Uri permalinkUri;
     Tweet tweet;
 
@@ -441,20 +440,20 @@ public abstract class BaseTweetView extends LinearLayout {
 
     /**
      * Enable or disable Tweet actions
-     * @param mediaEntityCallback Set the callback for any clicks made to MediaEntities.
+     * @param tweetMediaClickListener Set the callback for any clicks made to MediaEntities.
      *                 If a tweet has photos/images embedded you can add a callback to perform your own action.
      */
-    public void setOnMediaLinkActionCallback(Callback<MediaEntity> mediaEntityCallback) {
-        mediaLinkAction = mediaEntityCallback;
+    public void setOnTweetMediaClickListener(TweetMediaClickListener tweetMediaClickListener) {
+        this.tweetMediaClickListener = tweetMediaClickListener;
     }
 
     /**
      * Enable or disable Tweet actions
-     * @param linkClickActionCallback Set the callback for any clicks made to url's.
+     * @param tweetLinkClickListener Set the callback for any clicks made to url's.
      *                 If a tweet has any url's embedded you can add a callback to perform your own action.
      */
-    public void setOnLinkActionCallback(Callback<String> linkClickActionCallback) {
-        this.linkClickActionCallback = linkClickActionCallback;
+    public void setOnTweetLinkClickListener(TweetLinkClickListener tweetLinkClickListener) {
+        this.tweetLinkClickListener = tweetLinkClickListener;
     }
 
     /**
@@ -703,8 +702,8 @@ public abstract class BaseTweetView extends LinearLayout {
         mediaView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mediaLinkAction != null) {
-                    mediaLinkAction.success(new Result<MediaEntity>(entity, null));
+                if (tweetMediaClickListener != null) {
+                    tweetMediaClickListener.onTweetMediaEntityClicked(entity);
                 } else {
                     final VideoInfo.Variant variant = TweetMediaUtils.getSupportedVariant(entity);
                     if (variant != null) {
@@ -722,8 +721,8 @@ public abstract class BaseTweetView extends LinearLayout {
         mediaView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mediaLinkAction != null) {
-                    mediaLinkAction.success(new Result<MediaEntity>(entity, null));
+                if (tweetMediaClickListener != null) {
+                    tweetMediaClickListener.onTweetMediaEntityClicked(entity);
                 } else {
                     final Intent intent = new Intent(getContext(), GalleryActivity.class);
                     intent.putExtra(GalleryActivity.MEDIA_ENTITY, entity);
@@ -823,12 +822,12 @@ public abstract class BaseTweetView extends LinearLayout {
                 stripPhotoEntity, actionColor);
     }
 
-    public Callback<String> getLinkClickActionCallback() {
-        return linkClickActionCallback;
+    public TweetLinkClickListener getTweetLinkClickListener() {
+        return tweetLinkClickListener;
     }
 
-    public Callback<MediaEntity> getMediaLinkAction() {
-        return mediaLinkAction;
+    public TweetMediaClickListener getTweetMediaClickListener() {
+        return tweetMediaClickListener;
     }
 
     void setContentDescription(Tweet displayTweet) {
@@ -879,8 +878,8 @@ public abstract class BaseTweetView extends LinearLayout {
                 public void onUrlClicked(String url) {
                     if (TextUtils.isEmpty(url)) return;
 
-                    if (linkClickActionCallback != null) {
-                        linkClickActionCallback.success(new Result<String>(url, null));
+                    if (tweetLinkClickListener != null) {
+                        tweetLinkClickListener.onTweetLinkClickListener(url);
                     } else {
                         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                         if (!IntentUtils.safeStartActivity(getContext(), intent)) {
