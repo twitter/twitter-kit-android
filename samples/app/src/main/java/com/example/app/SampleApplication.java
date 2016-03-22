@@ -21,12 +21,14 @@ import android.app.Application;
 import android.os.StrictMode;
 import android.util.Log;
 
-import io.fabric.sdk.android.DefaultLogger;
-import io.fabric.sdk.android.Fabric;
-
+import com.crashlytics.android.Crashlytics;
 import com.squareup.leakcanary.LeakCanary;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.tweetui.TweetUi;
+
+import io.fabric.sdk.android.DefaultLogger;
+import io.fabric.sdk.android.Fabric;
 
 public class SampleApplication extends Application {
     private static final String TAG = SampleApplication.class.getSimpleName();
@@ -56,6 +58,7 @@ public class SampleApplication extends Application {
                 .debuggable(true)
                 .build();
 
-        Fabric.with(fabric);
+        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new TweetUi());
     }
 }
