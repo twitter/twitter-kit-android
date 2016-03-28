@@ -93,6 +93,5 @@
                 <action android:name="com.twitter.sdk.android.tweetcomposer.UPLOAD_FAILURE"/>
             </intent-filter>
         </receiver>
-
     </application>
 </manifest>

@@ -141,6 +141,10 @@ public class VideoControlView extends FrameLayout {
     }
 
     void updateProgress() {
+        if(player == null) {
+            return;
+        }
+
         final int duration = player.getDuration();
         final int currentTime = player.getCurrentPosition();
         final int bufferPercentage = player.getBufferPercentage();
@@ -165,6 +169,10 @@ public class VideoControlView extends FrameLayout {
     }
 
     void updateStateControl() {
+        if(player == null) {
+            return;
+        }
+
         if (player.isPlaying()) {
             setPauseDrawable();
         } else if (player.getCurrentPosition() >= player.getDuration() - 500) {
@@ -210,6 +218,11 @@ public class VideoControlView extends FrameLayout {
 
     public boolean isShowing() {
         return getVisibility() == View.VISIBLE;
+    }
+
+    public void resume(VideoView view) {
+        handler.sendEmptyMessage(SHOW_PROGRESS_MSG);
+        player = view;
     }
 
     public interface MediaPlayerControl {
