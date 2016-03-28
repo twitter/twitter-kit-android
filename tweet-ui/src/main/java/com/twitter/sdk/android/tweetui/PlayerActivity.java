@@ -68,7 +68,7 @@ public class PlayerActivity extends Activity {
             videoView.start();
 
             // restart the VideoControlView
-            videoControlView.resume();
+            videoControlView.resume(videoView);
         }
     }
 
