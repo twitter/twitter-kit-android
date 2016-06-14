@@ -2,6 +2,9 @@ language: android
 jdk: oraclejdk7
 android:
   components:
+    # https://github.com/travis-ci/travis-ci/issues/5036
+    - tools
+    - platform-tools
     - build-tools-23.0.3
     - android-22
     - extra-android-m2repository
