@@ -40,6 +40,9 @@ public class TweetBuilder {
     private Place place;
     private boolean possiblySensitive;
     private Object scopes;
+    private long quotedStatusId;
+    private String quotedStatusIdStr;
+    private Tweet quotedStatus;
     private int retweetCount;
     private boolean retweeted;
     private Tweet retweetedStatus;
@@ -148,6 +151,21 @@ public class TweetBuilder {
         return this;
     }
 
+    public TweetBuilder setQuotedStatusId(long quotedStatusId) {
+        this.quotedStatusId = quotedStatusId;
+        return this;
+    }
+
+    public TweetBuilder setQuotedStatusIdStr(String quotedStatusIdStr) {
+        this.quotedStatusIdStr = quotedStatusIdStr;
+        return this;
+    }
+
+    public TweetBuilder setQuotedStatus(Tweet quotedStatus) {
+        this.quotedStatus = quotedStatus;
+        return this;
+    }
+
     public TweetBuilder setRetweetCount(int retweetCount) {
         this.retweetCount = retweetCount;
         return this;
@@ -247,8 +265,9 @@ public class TweetBuilder {
         return new Tweet(coordinates, createdAt, currentUserRetweet, entities, extendedEtities,
                 favoriteCount, favorited, filterLevel, id, idStr, inReplyToScreenName,
                 inReplyToStatusId, inReplyToStatusIdStr, inReplyToUserId, inReplyToUserIdStr,
-                lang, place, possiblySensitive, scopes, retweetCount, retweeted,
-                retweetedStatus, source, text, displayTextRange, truncated, user, withheldCopyright,
-                withheldInCountries, withheldScope, card);
+                lang, place, possiblySensitive, scopes, quotedStatusId, quotedStatusIdStr,
+                quotedStatus, retweetCount, retweeted, retweetedStatus, source, text,
+                displayTextRange, truncated, user, withheldCopyright, withheldInCountries,
+                withheldScope, card);
     }
 }
