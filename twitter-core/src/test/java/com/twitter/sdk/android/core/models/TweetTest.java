@@ -48,6 +48,7 @@ public class TweetTest {
     private static final long EXPECTED_ID = 210462857140252672L;
     private static final String EXPECTED_TEXT = "Along with our new #Twitterbird, we've also updated our Display Guidelines: https://t.co/Ed4omjYs  ^JC";
     private static final Integer[] EXPECTED_DISPLAY_TEXT_RANGE = {0, 102};
+    private static final long EXPECTED_QUOTED_STATUS_ID = 745634624466911232L;
 
     @Rule
     public final TestResources testResources = new TestResources();
@@ -79,6 +80,21 @@ public class TweetTest {
             assertNotNull(tweet.displayTextRange);
             assertFalse(tweet.truncated);
             assertArrayEquals(EXPECTED_DISPLAY_TEXT_RANGE, tweet.displayTextRange.toArray());
+        } finally {
+            CommonUtils.closeQuietly(reader);
+        }
+    }
+
+    @Test
+    public void testQuotedTweetDeserialization() throws IOException {
+        JsonReader reader = null;
+        try {
+            reader = new JsonReader(new InputStreamReader(testResources
+                .getAsStream("model_quoted_tweet.json")));
+            final Tweet tweet = gson.fromJson(reader, Tweet.class);
+            assertEquals(EXPECTED_QUOTED_STATUS_ID, tweet.quotedStatusId);
+            assertEquals(String.valueOf(EXPECTED_QUOTED_STATUS_ID), tweet.quotedStatusIdStr);
+            assertNotNull(tweet.quotedStatus);
         } finally {
             CommonUtils.closeQuietly(reader);
         }
