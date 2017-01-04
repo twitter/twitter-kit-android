@@ -24,13 +24,17 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 
-import io.fabric.sdk.android.Fabric;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.IntentUtils;
-import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Single Sign On implementation of an {@link AuthHandler}
@@ -100,24 +104,22 @@ class SSOAuthHandler extends AuthHandler {
         return startAuthActivityForResult(activity);
     }
 
+    @Override
+    public boolean authorize(Fragment fragment) {
+        return startAuthActivityForResult(fragment);
+    }
+
 
     private boolean startAuthActivityForResult(Activity activity) {
-        final PackageManager pm = activity.getPackageManager();
-        final String packageName = availableSSOPackage(pm);
-        if (packageName == null) {
-            Fabric.getLogger().e(TwitterCore.TAG, "SSO app signature check failed", null);
+        String packageName = getPackageName(activity);
+        if (TextUtils.isEmpty(packageName)) {
             return false;
         }
 
-        final ComponentName ssoActivity = new ComponentName(packageName, SSO_CLASS_NAME);
-        final TwitterAuthConfig authConfig = getAuthConfig();
-        final Intent intent = new Intent().setComponent(ssoActivity);
-        if (!IntentUtils.isActivityAvailable(activity, intent)) {
-            Fabric.getLogger().e(TwitterCore.TAG, "SSO auth activity not found", null);
+        Intent intent = getSsoIntent(activity, packageName);
+        if (intent == null) {
             return false;
         }
-        intent.putExtra(EXTRA_CONSUMER_KEY, authConfig.getConsumerKey())
-                .putExtra(EXTRA_CONSUMER_SECRET, authConfig.getConsumerSecret());
 
         try {
             activity.startActivityForResult(intent, requestCode);
@@ -126,6 +128,49 @@ class SSOAuthHandler extends AuthHandler {
             Fabric.getLogger().e(TwitterCore.TAG, "SSO exception occurred", e);
             return false;
         }
+    }
+
+    private boolean startAuthActivityForResult(Fragment fragment) {
+        String packageName = getPackageName(fragment.getContext());
+        if (TextUtils.isEmpty(packageName)) {
+            return false;
+        }
+
+        Intent intent = getSsoIntent(fragment.getContext(), packageName);
+        if (intent == null) {
+            return false;
+        }
+
+        try {
+            fragment.startActivityForResult(intent, requestCode);
+            return true;
+        } catch (Exception e) {
+            Fabric.getLogger().e(TwitterCore.TAG, "SSO exception occurred", e);
+            return false;
+        }
+    }
+
+    @Nullable
+    private String getPackageName(Context context) {
+        final PackageManager pm = context.getPackageManager();
+        final String packageName = availableSSOPackage(pm);
+        if (packageName == null) {
+            Fabric.getLogger().e(TwitterCore.TAG, "SSO app signature check failed", null);
+        }
+        return packageName;
+    }
+
+    @Nullable
+    private Intent getSsoIntent(Context context, String packageName) {
+        final TwitterAuthConfig authConfig = getAuthConfig();
+        final ComponentName ssoActivity = new ComponentName(packageName, SSO_CLASS_NAME);
+        final Intent intent = new Intent().setComponent(ssoActivity);
+        if (!IntentUtils.isActivityAvailable(context, intent)) {
+            Fabric.getLogger().e(TwitterCore.TAG, "SSO auth activity not found", null);
+            return null;
+        }
+        return intent.putExtra(EXTRA_CONSUMER_KEY, authConfig.getConsumerKey())
+                .putExtra(EXTRA_CONSUMER_SECRET, authConfig.getConsumerSecret());
     }
 
     /**

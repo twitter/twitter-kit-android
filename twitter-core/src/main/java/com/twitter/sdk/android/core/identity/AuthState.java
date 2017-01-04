@@ -18,6 +18,7 @@
 package com.twitter.sdk.android.core.identity;
 
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 
 import com.twitter.sdk.android.core.TwitterCore;
 
@@ -37,11 +38,26 @@ class AuthState {
         if (isAuthorizeInProgress()) {
             Fabric.getLogger().w(TwitterCore.TAG, "Authorize already in progress");
         } else if (authHandler.authorize(activity)) {
-            result = authHandlerRef.compareAndSet(null, authHandler);
-            if (!result) {
-                Fabric.getLogger().w(TwitterCore.TAG, "Failed to update authHandler, authorize"
-                        + " already in progress.");
-            }
+            result = getResult(authHandler);
+        }
+        return result;
+    }
+
+    public boolean beginAuthorize(Fragment fragment, AuthHandler authHandler) {
+        boolean result = false;
+        if (isAuthorizeInProgress()) {
+            Fabric.getLogger().w(TwitterCore.TAG, "Authorize already in progress");
+        } else if (authHandler.authorize(fragment)) {
+            result = getResult(authHandler);
+        }
+        return result;
+    }
+
+    private boolean getResult(AuthHandler authHandler) {
+        boolean result = authHandlerRef.compareAndSet(null, authHandler);
+        if (!result) {
+            Fabric.getLogger().w(TwitterCore.TAG, "Failed to update authHandler, authorize"
+                    + " already in progress.");
         }
         return result;
     }
