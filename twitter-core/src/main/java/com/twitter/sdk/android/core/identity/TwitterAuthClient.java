@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import io.fabric.sdk.android.Fabric;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.SessionManager;
@@ -33,6 +32,8 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.internal.scribe.DefaultScribeClient;
 import com.twitter.sdk.android.core.internal.scribe.EventNamespace;
 import com.twitter.sdk.android.core.internal.scribe.TwitterCoreScribeClientHolder;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Client for requesting authorization and email from the user.
@@ -100,6 +101,13 @@ public class TwitterAuthClient {
         } else {
             handleAuthorize(activity, callback);
         }
+    }
+
+    /**
+     * Cancels any pending authorization request
+     */
+    public void cancelAuthorize() {
+        authState.endAuthorize();
     }
 
     private void handleAuthorize(Activity activity, Callback<TwitterSession> callback) {

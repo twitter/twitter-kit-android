@@ -23,10 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import io.fabric.sdk.android.FabricAndroidTestCase;
-import io.fabric.sdk.android.FabricTestUtils;
-import io.fabric.sdk.android.KitStub;
-
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.SessionManager;
@@ -39,7 +35,19 @@ import com.twitter.sdk.android.core.internal.scribe.EventNamespace;
 
 import org.mockito.ArgumentCaptor;
 
-import static org.mockito.Mockito.*;
+import io.fabric.sdk.android.FabricAndroidTestCase;
+import io.fabric.sdk.android.FabricTestUtils;
+import io.fabric.sdk.android.KitStub;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 public class TwitterAuthClientTest extends FabricAndroidTestCase {
 
@@ -122,6 +130,12 @@ public class TwitterAuthClientTest extends FabricAndroidTestCase {
         // Verify that when authorize is in progress, callback is notified of error.
         authClient.authorize(mockActivity, mockCallback);
         verify(mockCallback).failure(any(TwitterAuthException.class));
+    }
+
+    public void testAuthorize_cancelAuthorize() {
+        authClient.cancelAuthorize();
+
+        verify(mockAuthState).endAuthorize();
     }
 
     public void testAuthorize_ssoAvailable() throws PackageManager.NameNotFoundException {
