@@ -18,14 +18,15 @@
 package com.twitter.sdk.android.tweetui;
 
 import com.twitter.sdk.android.core.models.Search;
+import com.twitter.sdk.android.core.services.params.Geocode;
 
 import retrofit2.Call;
 
 public class TestSearchTimeline extends SearchTimeline {
 
     TestSearchTimeline(String query, String resultType, String lang,
-            Integer count, String untilDate) {
-        super(query, resultType, lang, count, untilDate);
+                       Integer count, String untilDate, Geocode geocode) {
+        super(query, resultType, lang, count, untilDate, geocode);
     }
 
     @Override

@@ -34,6 +34,7 @@ public class SearchTimelineTest extends TweetUiTestCase {
     private static final String TEST_RESULT_TYPE = "popular";
     private static final String TEST_LANG = "en";
     private static final String TEST_UNTIL_DATE = "2012-08-20";
+    private static final Geocode TEST_GEOCODE = new Geocode(41.0, 29.0, 1, Geocode.Distance.KILOMETERS);
     private static final Date TEST_UNTIL =
             new GregorianCalendar(2012, Calendar.AUGUST, 20).getTime();
     private static final Integer REQUIRED_DEFAULT_ITEMS_PER_REQUEST = 30;
@@ -45,45 +46,47 @@ public class SearchTimelineTest extends TweetUiTestCase {
 
     public void testConstructor() {
         final SearchTimeline timeline = new SearchTimeline(TEST_QUERY, TEST_RESULT_TYPE,
-                TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE);
+                TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE, TEST_GEOCODE);
         assertEquals(TEST_QUERY + SearchTimeline.FILTER_RETWEETS, timeline.query);
         assertEquals(TEST_LANG, timeline.languageCode);
         assertEquals(TEST_ITEMS_PER_REQUEST, timeline.maxItemsPerRequest);
         assertEquals(TEST_UNTIL_DATE, timeline.untilDate);
+        assertEquals(TEST_GEOCODE, timeline.geocode);
     }
 
     // most api arguments should default to Null to allow the backend to determine default behavior
     public void testConstructor_defaults() {
-        final SearchTimeline timeline = new SearchTimeline(null, null, null, null, null);
+        final SearchTimeline timeline = new SearchTimeline(null, null, null, null, null, null);
         assertNull(timeline.query);
         assertNull(timeline.languageCode);
         assertNull(timeline.maxItemsPerRequest);
         assertNull(timeline.untilDate);
+        assertNull(timeline.geocode);
     }
 
     // FILTER_RETWEETS modifier should be added to the end of the non-null search queries
 
     public void testFilterRetweets() {
         final SearchTimeline timeline = new SearchTimeline(TEST_QUERY, null, null, null,
-                null);
+                null, null);
         assertTrue(timeline.query.endsWith(SearchTimeline.FILTER_RETWEETS));
     }
 
     public void testAddFilterRetweets() {
         final SearchTimeline timeline = new SearchTimeline(TEST_FILTER_QUERY, null, null,
-                null, null);
+                null, null, null);
         assertEquals("from:twitter -filter:retweets", timeline.query);
     }
 
     public void testFilterRetweets_nullQuery() {
         // handle null queries, do not append FILTER_RETWEETS
-        final SearchTimeline timeline = new SearchTimeline(null, null, null, null, null);
+        final SearchTimeline timeline = new SearchTimeline(null, null, null, null, null, null);
         assertNull(timeline.query);
     }
 
     public void testNext_createsCorrectRequest() {
         final SearchTimeline timeline = spy(new TestSearchTimeline(TEST_QUERY,
-                TEST_RESULT_TYPE, TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE));
+                TEST_RESULT_TYPE, TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE, TEST_GEOCODE));
         timeline.next(TEST_SINCE_ID, mock(Callback.class));
         verify(timeline).createSearchRequest(eq(TEST_SINCE_ID),
                 isNull(Long.class));
@@ -91,7 +94,7 @@ public class SearchTimelineTest extends TweetUiTestCase {
 
     public void testPrevious_createsCorrectRequest() {
         final SearchTimeline timeline = spy(new TestSearchTimeline(TEST_QUERY,
-                TEST_RESULT_TYPE, TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE));
+                TEST_RESULT_TYPE, TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE, TEST_GEOCODE));
         timeline.previous(TEST_MAX_ID, mock(Callback.class));
         // intentionally decrementing the maxId which is passed through to the request
         verify(timeline).createSearchRequest(isNull(Long.class),
@@ -101,7 +104,7 @@ public class SearchTimelineTest extends TweetUiTestCase {
     public void testCreateSearchRequest() {
         // build a timeline with test params
         final SearchTimeline timeline = spy(new TestSearchTimeline(TEST_QUERY,
-                TEST_RESULT_TYPE, TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE));
+                TEST_RESULT_TYPE, TEST_LANG, TEST_ITEMS_PER_REQUEST, TEST_UNTIL_DATE, TEST_GEOCODE));
         // create a request directly
         timeline.createSearchRequest(TEST_SINCE_ID, TEST_MAX_ID);
 
@@ -127,12 +130,14 @@ public class SearchTimelineTest extends TweetUiTestCase {
                 .maxItemsPerRequest(TEST_ITEMS_PER_REQUEST)
                 .resultType(SearchTimeline.ResultType.POPULAR)
                 .untilDate(TEST_UNTIL)
+                .geocode(TEST_GEOCODE)
                 .build();
         assertEquals(TEST_QUERY + SearchTimeline.FILTER_RETWEETS, timeline.query);
         assertEquals(TEST_RESULT_TYPE, timeline.resultType);
         assertEquals(TEST_LANG, timeline.languageCode);
         assertEquals(TEST_ITEMS_PER_REQUEST, timeline.maxItemsPerRequest);
         assertEquals(TEST_UNTIL_DATE, timeline.untilDate);
+        assertEquals(TEST_GEOCODE, timeline.geocode);
     }
 
     // api arguments should default to Null to allow the backend to determine default behavior
@@ -143,6 +148,7 @@ public class SearchTimelineTest extends TweetUiTestCase {
         assertNull(timeline.languageCode);
         assertEquals(REQUIRED_DEFAULT_ITEMS_PER_REQUEST, timeline.maxItemsPerRequest);
         assertNull(timeline.untilDate);
+        assertNull(timeline.geocode);
     }
 
     public void testBuilder_query() {
@@ -175,5 +181,13 @@ public class SearchTimelineTest extends TweetUiTestCase {
                 .maxItemsPerRequest(TEST_ITEMS_PER_REQUEST)
                 .build();
         assertEquals(TEST_ITEMS_PER_REQUEST, timeline.maxItemsPerRequest);
+    }
+
+    public void testBuilder_geocode() {
+        final SearchTimeline timeline = new SearchTimeline.Builder()
+                .query(TEST_QUERY)
+                .geocode(TEST_GEOCODE)
+                .build();
+        assertEquals(TEST_GEOCODE, timeline.geocode);
     }
 }
