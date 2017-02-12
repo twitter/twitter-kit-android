@@ -23,6 +23,7 @@ import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Search;
 import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.params.Geocode;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,13 +46,15 @@ public class SearchTimeline extends BaseTimeline implements Timeline<Tweet> {
     final String languageCode;
     final Integer maxItemsPerRequest;
     final String untilDate;
+    final Geocode geocode;
 
     SearchTimeline(String query, String resultType, String languageCode,
-            Integer maxItemsPerRequest, String untilDate) {
+            Integer maxItemsPerRequest, String untilDate, Geocode geocode) {
         this.languageCode = languageCode;
         this.maxItemsPerRequest = maxItemsPerRequest;
         this.untilDate = untilDate;
         this.resultType = resultType;
+        this.geocode = geocode;
         // if the query is non-null append the filter Retweets modifier
         this.query = query == null ? null : query + FILTER_RETWEETS;
     }
@@ -86,7 +89,7 @@ public class SearchTimeline extends BaseTimeline implements Timeline<Tweet> {
     }
 
     Call<Search> createSearchRequest(final Long sinceId, final Long maxId) {
-        return TwitterCore.getInstance().getApiClient().getSearchService().tweets(query, null,
+        return TwitterCore.getInstance().getApiClient().getSearchService().tweets(query, geocode,
                 languageCode, null, resultType, maxItemsPerRequest, untilDate, sinceId, maxId,
                 true);
     }
@@ -145,6 +148,7 @@ public class SearchTimeline extends BaseTimeline implements Timeline<Tweet> {
         private String resultType = ResultType.FILTERED.type;
         private Integer maxItemsPerRequest = 30;
         private String untilDate;
+        private Geocode geocode;
 
         /**
          * Constructs a Builder.
@@ -200,6 +204,16 @@ public class SearchTimeline extends BaseTimeline implements Timeline<Tweet> {
         }
 
         /**
+         * Returns tweets based on the given geocode.
+         *
+         * @param geocode Geocode.
+         */
+        public Builder geocode(Geocode geocode) {
+            this.geocode = geocode;
+            return this;
+        }
+
+        /**
          * Returns tweets generated before the given date. Date should be formatted as YYYY-MM-DD.
          * Keep in mind that the search index may not go back as far as the date you specify here.
          *
@@ -220,7 +234,7 @@ public class SearchTimeline extends BaseTimeline implements Timeline<Tweet> {
                 throw new IllegalStateException("query must not be null");
             }
             return new SearchTimeline(query, resultType, lang, maxItemsPerRequest,
-                    untilDate);
+                    untilDate, geocode);
         }
     }
 }
