@@ -19,6 +19,7 @@ package com.twitter.sdk.android.core.identity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -68,6 +69,13 @@ public abstract class AuthHandler {
      * @return true if authorize request was successfully started.
      */
     public abstract boolean authorize(Activity activity);
+
+    /**
+     * Called to request authorization.
+     *
+     * @return true if authorize request was successfully started.
+     */
+    public abstract boolean authorize(Fragment fragment);
 
     /**
      * Called when {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}

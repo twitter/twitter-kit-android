@@ -18,7 +18,9 @@
 package com.twitter.sdk.android.core.identity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -44,8 +46,14 @@ class OAuthHandler extends AuthHandler {
         return true;
     }
 
-    Intent newIntent(Activity activity) {
-        final Intent intent = new Intent(activity, OAuthActivity.class);
+    @Override
+    public boolean authorize(Fragment fragment) {
+        fragment.startActivityForResult(newIntent(fragment.getContext()), requestCode);
+        return true;
+    }
+
+    Intent newIntent(Context context) {
+        final Intent intent = new Intent(context, OAuthActivity.class);
         intent.putExtra(OAuthActivity.EXTRA_AUTH_CONFIG, getAuthConfig());
         return intent;
     }

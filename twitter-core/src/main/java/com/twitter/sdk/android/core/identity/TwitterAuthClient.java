@@ -20,19 +20,21 @@ package com.twitter.sdk.android.core.identity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 
-import io.fabric.sdk.android.Fabric;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.SessionManager;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthException;
 import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.internal.scribe.DefaultScribeClient;
 import com.twitter.sdk.android.core.internal.scribe.EventNamespace;
 import com.twitter.sdk.android.core.internal.scribe.TwitterCoreScribeClientHolder;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Client for requesting authorization and email from the user.
@@ -102,11 +104,42 @@ public class TwitterAuthClient {
         }
     }
 
+    /**
+     * Requests authorization.
+     *
+     * @param fragment The {@link android.support.v4.app.Fragment} context to use for the authorization flow.
+     * @param callback The callback interface to invoke when authorization completes.
+     * @throws java.lang.IllegalArgumentException if fragment or callback is null.
+     */
+    public void authorize(Fragment fragment, Callback<TwitterSession> callback) {
+        if (fragment == null) {
+            throw new IllegalArgumentException("Fragment must not be null.");
+        }
+        if (callback == null) {
+            throw new IllegalArgumentException("Callback must not be null.");
+        }
+
+        if (fragment.getActivity().isFinishing()) {
+            Fabric.getLogger().e(TwitterCore.TAG, "Cannot authorize, activity is finishing.", null);
+        } else {
+            handleAuthorize(fragment, callback);
+        }
+    }
+
     private void handleAuthorize(Activity activity, Callback<TwitterSession> callback) {
         scribeAuthorizeImpression();
         final CallbackWrapper callbackWrapper = new CallbackWrapper(sessionManager, callback);
         if (!authorizeUsingSSO(activity, callbackWrapper)
                 && !authorizeUsingOAuth(activity, callbackWrapper)) {
+            callbackWrapper.failure(new TwitterAuthException("Authorize failed."));
+        }
+    }
+
+    private void handleAuthorize(Fragment fragment, Callback<TwitterSession> callback) {
+        scribeAuthorizeImpression();
+        final CallbackWrapper callbackWrapper = new CallbackWrapper(sessionManager, callback);
+        if (!authorizeUsingSSO(fragment, callbackWrapper)
+                && !authorizeUsingOAuth(fragment, callbackWrapper)) {
             callbackWrapper.failure(new TwitterAuthException("Authorize failed."));
         }
     }
@@ -121,9 +154,25 @@ public class TwitterAuthClient {
         }
     }
 
+    private boolean authorizeUsingSSO(Fragment fragment, CallbackWrapper callbackWrapper) {
+        if (SSOAuthHandler.isAvailable(fragment.getContext())) {
+            Fabric.getLogger().d(TwitterCore.TAG, "Using SSO");
+            return authState.beginAuthorize(fragment,
+                     new SSOAuthHandler(authConfig, callbackWrapper, authConfig.getRequestCode()));
+        } else {
+            return false;
+        }
+    }
+
     private boolean authorizeUsingOAuth(Activity activity, CallbackWrapper callbackWrapper) {
         Fabric.getLogger().d(TwitterCore.TAG, "Using OAuth");
         return authState.beginAuthorize(activity,
+                new OAuthHandler(authConfig, callbackWrapper, authConfig.getRequestCode()));
+    }
+
+    private boolean authorizeUsingOAuth(Fragment fragment, CallbackWrapper callbackWrapper) {
+        Fabric.getLogger().d(TwitterCore.TAG, "Using OAuth");
+        return authState.beginAuthorize(fragment,
                 new OAuthHandler(authConfig, callbackWrapper, authConfig.getRequestCode()));
     }
 

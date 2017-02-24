@@ -79,6 +79,7 @@ dependencies {
     compile dependency.retrofitGsonConverter
     compile dependency.gson
     compile dependency.okHttp
+    compile dependency.appCompat
 
     androidTestCompile dependency.mockito
     androidTestCompile dependency.dexmakerMockito
