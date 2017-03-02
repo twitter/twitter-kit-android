@@ -79,3 +79,8 @@ dependencies {
     androidTestCompile dependency.espresso
     androidTestCompile dependency.androidTestingSupport
 }
+
+//noinspection GroovyAssignabilityCheck
+configurations.all {
+    resolutionStrategy.force "com.android.support:support-annotations:${supportLibVersion}"
+}

@@ -1,8 +1,12 @@
 ext {
-    compileSdkVersion = 23
-    buildToolsVersion = '23.0.3'
-    targetSdkVersion = 22
+    compileSdkVersion = 25
+    buildToolsVersion = '25.0.2'
+    targetSdkVersion = 25
 
+    leakCanaryVersion = '1.4'
+    okhttpVersion = '3.6.0'
+    supportLibVersion = '25.2.0'
+    retrofit2Version = '2.2.0'
     minSdkVersion = [
             twitter        : 14
     ]
@@ -16,7 +20,7 @@ ext {
     dependency = [
             // Gradle plugins
             spoonGradlePlugin          : 'com.stanfy.spoon:spoon-gradle-plugin:1.0.4',
-            androidGradlePlugin        : 'com.android.tools.build:gradle:2.1.2',
+            androidGradlePlugin        : 'com.android.tools.build:gradle:2.2.3',
             fabricGradlePlugin         : 'io.fabric.tools:gradle:1.22.0',
 
             // Fabric
@@ -25,9 +29,9 @@ ext {
             mopub                      : 'com.mopub:mopub-sdk:4.6.0@aar',
 
             // Sample App
-            leakCanary                 : 'com.squareup.leakcanary:leakcanary-android:1.4',
-            leakCanaryNoOp             : 'com.squareup.leakcanary:leakcanary-android-no-op:1.4',
-            appCompat                  : 'com.android.support:appcompat-v7:23.1.1',
+            leakCanary                 : "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}",
+            leakCanaryNoOp             : "com.squareup.leakcanary:leakcanary-android-no-op:${leakCanaryVersion}",
+            appCompat                  : "com.android.support:appcompat-v7:${supportLibVersion}",
 
             // Tests
             spoon                      : 'com.squareup.spoon:spoon-client:1.3.2',
@@ -41,14 +45,14 @@ ext {
 
             // Other
             picasso                    : 'com.squareup.picasso:picasso:2.5.2',
-            supportV4                  : 'com.android.support:support-v4:23.1.1',
-            retrofit                   : 'com.squareup.retrofit2:retrofit:2.0.2',
-            retrofitMock               : 'com.squareup.retrofit2:retrofit-mock:2.0.2',
-            retrofitGsonConverter      : 'com.squareup.retrofit2:converter-gson:2.0.2',
-            gson                       : 'com.google.code.gson:gson:2.6.1',
-            okHttp                     : 'com.squareup.okhttp3:okhttp:3.2.0',
-            okHttpInterceptor          : 'com.squareup.okhttp3:logging-interceptor:3.2.0',
-            design                     : 'com.android.support:design:23.1.1',
+            supportV4                  : "com.android.support:support-v4:${supportLibVersion}",
+            retrofit                   : "com.squareup.retrofit2:retrofit:${retrofit2Version}",
+            retrofitMock               : "com.squareup.retrofit2:retrofit-mock:${retrofit2Version}",
+            retrofitGsonConverter      : "com.squareup.retrofit2:converter-gson:${retrofit2Version}",
+            gson                       : 'com.google.code.gson:gson:2.8.0',
+            okHttp                     : "com.squareup.okhttp3:okhttp:${okhttpVersion}",
+            okHttpInterceptor          : "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}",
+            design                     : "com.android.support:design:${supportLibVersion}",
             tweetText                  : 'com.twitter:twitter-text:1.13.0'
     ]
 }
