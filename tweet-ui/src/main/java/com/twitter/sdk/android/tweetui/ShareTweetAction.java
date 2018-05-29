@@ -49,6 +49,7 @@ class ShareTweetAction implements View.OnClickListener {
         final Intent shareIntent = getShareIntent(shareSubject, shareContent);
         final String shareText = resources.getString(R.string.tw__share_tweet);
         final Intent chooser = Intent.createChooser(shareIntent, shareText);
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         launchShareIntent(chooser, context);
     }
 
