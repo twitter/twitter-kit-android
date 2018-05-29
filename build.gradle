@@ -26,6 +26,7 @@ subprojects { Project subproject ->
         }
         dependencies {
             classpath dependency.androidGradlePlugin
+            classpath 'com.android.tools.build:gradle:3.1.2'
         }
     }
 
