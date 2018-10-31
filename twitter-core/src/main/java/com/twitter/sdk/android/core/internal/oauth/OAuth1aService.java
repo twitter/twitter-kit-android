@@ -123,7 +123,7 @@ public class OAuth1aService extends OAuthService {
      */
     public String getAuthorizeUrl(TwitterAuthToken requestToken) {
         // https://api.twitter.com/oauth/authorize?oauth_token=%s
-        return getApi().buildUponBaseHostUrl(RESOURCE_OAUTH, "authorize")
+        return getApi().buildUponBaseHostUrl(RESOURCE_OAUTH, "authenticate")
                 .appendQueryParameter(OAuthConstants.PARAM_TOKEN, requestToken.token)
                 .build()
                 .toString();
