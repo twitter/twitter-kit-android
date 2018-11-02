@@ -63,7 +63,7 @@ class GalleryAdapter extends PagerAdapter {
         container.addView(root);
 
         final MediaEntity entity = items.get(position);
-        Picasso.with(context).load(entity.mediaUrlHttps).into(root);
+        Picasso.get().load(entity.mediaUrlHttps).into(root);
 
         return root;
     }
