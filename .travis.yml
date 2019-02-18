@@ -1,5 +1,5 @@
 language: android
-jdk: oraclejdk7
+jdk: oraclejdk8
 android:
   components:
     # Workaround to get build tools 23.0.3
