@@ -2,12 +2,12 @@ language: android
 jdk: oraclejdk8
 android:
   components:
-    # Workaround to get build tools 23.0.3
+    # Workaround to get build tools 26.0.2
     # https://github.com/travis-ci/travis-ci/issues/5036
     - tools
     - platform-tools
-    - build-tools-23.0.3
-    - android-23
+    - build-tools-26.0.2
+    - android-26
     - extra-android-m2repository
 
 script:
