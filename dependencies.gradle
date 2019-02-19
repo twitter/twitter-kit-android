@@ -34,7 +34,7 @@ ext {
             dexmakerMockito            : 'com.linkedin.dexmaker:dexmaker-mockito:2.2.0',
 
             // Other
-            picasso                    : 'com.squareup.picasso:picasso:2.5.2',
+            picasso                    : 'com.squareup.picasso:picasso:2.71828',
             supportCompatV4            : 'com.android.support:support-compat:26.1.0',
             supportCoreV4              : 'com.android.support:support-core-ui:26.1.0',
             retrofit                   : 'com.squareup.retrofit2:retrofit:2.3.0',

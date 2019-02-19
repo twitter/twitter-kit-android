@@ -24,3 +24,32 @@
 -keepclasseswithmembers class * {
   @retrofit2.http.* <methods>;
 }
+
+#okhttp (partially from https://github.com/square/okhttp/blob/master/okhttp/src/main/resources/META-INF/proguard/okhttp3.pro)
+-dontwarn com.squareup.okhttp.*
+
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+# Animal Sniffer compileOnly dependency to ensure APIs are compatible with older versions of Java.
+-dontwarn org.codehaus.mojo.animal_sniffer.*
+
+# OkHttp platform used only on JVM and when Conscrypt dependency is available.
+-dontwarn okhttp3.internal.platform.ConscryptPlatform
+
+#mopub (https://raw.githubusercontent.com/mopub/mopub-android-sdk/master/mopub-sample/proguard.cfg0
+# Keep public classes and methods.
+-keepclassmembers class com.mopub.** { public *; }
+-keep public class com.mopub.**
+-keep public class android.webkit.JavascriptInterface {}
+
+# Explicitly keep any custom event classes in any package.
+-keep class * extends com.mopub.mobileads.CustomEventBanner {}
+-keep class * extends com.mopub.mobileads.CustomEventInterstitial {}
+-keep class * extends com.mopub.mobileads.CustomEventRewardedAd {}
+-keep class * extends com.mopub.nativeads.CustomEventNative {}
+
+# Keep methods that are accessed via reflection
+-keepclassmembers class ** { @com.mopub.common.util.ReflectionTarget *; }
+
+-dontwarn com.twitter.*
